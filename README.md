@@ -13,16 +13,33 @@ This paper presents \textbf{BattleAgent}, a detailed emulation demonstration sys
 
 
 ## QuickStart
+### Basic Usage
 
+To run the main algorithm, use the following command:
+
+```bash
+python simulation_controller.py
+```
+
+### Advanced Options
+
+The script includes several command-line options to customize the simulation:
+
+```bash
+python simulation_controller.py --conflict_name Poitiers --LLM_MODEL gpt --is_GPT4V_activate 0 --simulation_time 90 --update_interval 15
+```
+
+- `--conflict_name`: Choose the historical conflict to simulate. Options are 'Poitiers', 'Falkirk', 'Agincourt'.
+- `--LLM_MODEL`: Specify the language model to use. Options include 'claude' and 'gpt'.
+- `--is_GPT4V_activate`: If you want to use GPT-4 V instead of standard GPT-4. Set to 1 to activate.
+- `--simulation_time`: Number of minutes the simulation will run.
+- `--update_interval`: Minutes between simulation updates.
+
+- 
 ### Install environment
 ```
 conda create --name battleagent python=3.9
 conda activate battleagent
-
-git clone https://github.com/dhh1995/PromptCoder
-cd PromptCoder
-pip install -e .
-cd ..
 
 git clone https://github.com/agiresearch/BattleAgent.git
 cd BatleAgent
@@ -30,7 +47,14 @@ pip install -r requirements.txt
 ```
 
 ### Set up API keys
+If you want to use OpenAI model as base LLM:
+```
+export OPENAI_API_KEY=your_openai_api_key
+```
 
-
+If you want to use Claude model as base:
+```
+export CLAUDE_API_KEY=your_claude_api_key
+```
 ### Run BattleAgent Sandbox
 
