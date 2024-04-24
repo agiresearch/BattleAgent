@@ -2,7 +2,8 @@ import os
 import base64
 from openai import OpenAI
 
-open_ai_key = ""
+# open_ai_key = ""
+open_ai_key = os.getenv('OPENAI_API_KEY')
 
 client = OpenAI(api_key= open_ai_key)
 

@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from prompt.map_setting_of_other_battles import *
 from prompt.agent_profile import country_E_Army, country_F_Army, System_Setting, History_Setting

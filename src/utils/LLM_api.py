@@ -4,7 +4,8 @@ import os
 
 def run_claude(message):
     api_client = anthropic.Anthropic(
-        api_key = ""
+        # api_key = ""
+        api_key = os.getenv('CLAUDE_API_KEY')
     )
     # system_prompt = "You are a rational assistant that carefully answer the question."
     message = api_client.messages.create(
@@ -18,7 +19,8 @@ def run_claude(message):
     return message.content[0].text
 
 def run_gpt(text_prompt, temperature: float = 0, model="gpt-4-1106-preview", seed=440):
-    open_ai_key = ""
+    # open_ai_key = ""
+    open_ai_key = os.getenv('OPENAI_API_KEY')
     client = OpenAI(api_key=open_ai_key)
     
     response = client.chat.completions.create(
