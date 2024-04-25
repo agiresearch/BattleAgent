@@ -1,11 +1,11 @@
 # BattleAgent: Multi-modal Dynamic Emulation on Historical Battles to Complement Historical Analysis
 
-<a href='https://arxiv.org/abs/2311.17227'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
+<a href='https://arxiv.org/abs/2404.15532'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/agiresearch/BattleAgent/blob/main/LICENSE)
 
 
 
-<img align="center" width="628" alt="Screen Shot 2024-04-23 at 9 39 28 AM" src="https://github.com/agiresearch/BattleAgent/assets/28013619/cd84e205-469b-465a-8c77-021a55a64498">
+<img align="center" alt="main" src="https://github.com/agiresearch/BattleAgent/assets/28013619/cd84e205-469b-465a-8c77-021a55a64498">
 
 
 ## Abstract
