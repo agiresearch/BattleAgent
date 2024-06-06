@@ -19,6 +19,8 @@ This paper presents **BattleAgent**, a detailed emulation demonstration system t
 
 ## Short Video Demo on Battle of Crecy Based on LLM generation
 
+(A clearer version can be found [here](https://drive.google.com/file/d/1lFGz0ujeHHRz4FsqX8TmIjdZODupVwwp/view?usp=sharing))
+
 https://github.com/agiresearch/BattleAgent/assets/28013619/33627864-3924-4660-b58b-70fd353f0c70
 
 
