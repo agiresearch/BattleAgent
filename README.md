@@ -7,9 +7,20 @@
 
 <img align="center" alt="main" src="https://github.com/agiresearch/BattleAgent/assets/28013619/cd84e205-469b-465a-8c77-021a55a64498">
 
+## Update!
+
+[June 5th, 2024]🔥 We made the first demo based on LLM's generation for Battle of Crecy!
+
+[April 23rd, 2024]🔥 We release BattleAgent paper! The first paper on LLM-based historical game engine!
+
 
 ## Abstract
 This paper presents **BattleAgent**, a detailed emulation demonstration system that combines the Large Vision-Language Model and Multi-agent System. This novel system aims to simulate complex dynamic interactions among multiple agents, as well as between agents and their environments, over a period of time. It emulates both the decision-making processes of leaders and the viewpoints of ordinary participants, such as soldiers. The emulation showcases the current capabilities of agents, featuring fine-grained multi-modal interactions between agents and landscapes. It develops customizable agent structures to meet specific situational requirements, for example, a variety of battle-related activities like scouting and trench digging. These components collaborate to recreate historical events in a lively and comprehensive manner while offering insights into the thoughts and feelings of individuals from diverse viewpoints. The technological foundations of BattleAgent establish detailed and immersive settings for historical battles, enabling individual agents to partake in, observe, and dynamically respond to evolving battle scenarios. This methodology holds the potential to substantially deepen our understanding of historical events, particularly through individual accounts. Such initiatives can also aid historical research, as conventional historical narratives often lack documentation and prioritize the perspectives of decision-makers, thereby overlooking the experiences of ordinary individuals. This biased documentation results in a considerable gap in our historical understanding, as many stories remain untold. 
+
+## Short Video Demo on Battle of Crecy Based on LLM generation
+
+https://github.com/agiresearch/BattleAgent/assets/28013619/33627864-3924-4660-b58b-70fd353f0c70
+
 
 --------------------
 
