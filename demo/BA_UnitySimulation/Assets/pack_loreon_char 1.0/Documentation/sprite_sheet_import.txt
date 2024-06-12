@@ -1,0 +1,21 @@
+Sprite_Sheet import informations:
+
+If you want to import sprite_sheet like using Game Maker Studio, you need to understand the sheet structure. All the sprite sheets use same structures
+
++ Character Sheet:
+- small frame : (non-attack animations)
+	size : 50 x 48 
+	origin 24 x 41
+- big frame : (all attack animations)
+	size : 100 x 65 
+	origin : 39x58
+	vertical cell offset : 5
+	vertical pixel offset : 11
+
++ Effect sheet:
+	size : 50x50
+	origin : 25x25
+
++ Arrows sheet:
+	size : 35x35
+	origin : 18x18
