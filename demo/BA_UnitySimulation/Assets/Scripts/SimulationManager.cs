@@ -4,7 +4,6 @@ using Unity.Burst.Intrinsics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -25,9 +24,15 @@ public class SimulationManager : MonoBehaviour
 
     private List<GameObject> pixelArts = new List<GameObject>();
 
+    private TextDisplay textDisplay;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        // Get the TextDisplay component attached to the same GameObject
+        textDisplay = GetComponent<TextDisplay>();
+
         // Get all agents in Army E
         InitializeTeamAgents(armyEParent, armyEAgents);
 
@@ -55,42 +60,43 @@ public class SimulationManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
 
-
-        Debug.Log("1. Army E gathers at [-0.2, 1.0]");
+        textDisplay.SetText("Army E gathers at [-0.2, 1.0]. Prepare for battle.");
         MoveAllTeamAgents(armyEAgents, new Vector3(-0.2f, 1.0f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyEAgents));
 
         yield return new WaitForSeconds(1.0f);
 
 
-        Debug.Log("2. Army F gathers at [2.6, -1.2]");
+        textDisplay.SetText("Army F moves to [-0.2, 1.0] and fortifies position.");
         MoveAllTeamAgents(armyFAgents, new Vector3(2.6f, -1.2f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
 
         yield return new WaitForSeconds(1.0f);
 
 
-        Debug.Log("3. ArmyE takes action");
+        textDisplay.SetText("Army E deploys 400 knights (Army E - sd4f65) to [1.6, -1.4], and attacks Army F.");
         var (armyESubAgents1, armyESubAgents2) = SplitAgents(armyEAgents, 4);
         MoveAllTeamAgents(armyESubAgents1, new Vector3(1.6f, -1.4f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents1));
         yield return PlayPixelArtAnimation(pixelArts[3], new Vector3(1.6f, -1.4f), Vector3.right, speed: 0.5f, animLoops: 3);
+
+        textDisplay.SetText("Army F loses 200 soldiers.");
         armyFAgents[armyFAgents.Count - 1].gameObject.SetActive(false);
         armyFAgents[armyFAgents.Count - 2].gameObject.SetActive(false);
+        yield return new WaitForSeconds(2.0f);
 
-        yield return new WaitForSeconds(1.0f);
 
-
-        Debug.Log("4. ArmyF takes action");
+        textDisplay.SetText("Army F retaliates by moving to [2.2, -1.3] and launches spear attack.");
         MoveAllTeamAgents(armyFAgents, new Vector3(2.2f, -1.3f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
         yield return PlayPixelArtAnimation(pixelArts[12], new Vector3(2.2f, -1.3f), Vector3.right, speed: 0.5f, animLoops: 3);
+
+        textDisplay.SetText("Army E - sd4f65 loses 100 soldiers.");
         armyESubAgents1[armyESubAgents1.Count - 1].gameObject.SetActive(false);
+        yield return new WaitForSeconds(2.0f);
 
-        yield return new WaitForSeconds(1.0f);
 
-
-        Debug.Log("5. ArmyF takes action");
+        textDisplay.SetText("Army F deploys 600 archers (Army F - g51j5f) to [1.4, 0.8], causing a casualty of 120 soldiers on Army E.");
         var (armyFSubAgents1, armyFSubAgents2) = SplitAgents(armyFAgents, 6);
         MoveAllTeamAgents(armyFSubAgents1, new Vector3(1.4f, 0.8f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFSubAgents1));
@@ -100,7 +106,7 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
 
-        Debug.Log("6. ArmyE takes action");
+        textDisplay.SetText("Army E swiftly reacts by sending out 500 calvaries to [1.4, 0.8], causing 180 damages on Army F.");
         var (armyESubAgents3, armyESubAgents4) = SplitAgents(armyESubAgents2, 5);
         MoveAllTeamAgents(armyESubAgents3, new Vector3(0.5f, 0.6f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents3));
@@ -108,10 +114,10 @@ public class SimulationManager : MonoBehaviour
         armyFSubAgents1[armyFSubAgents1.Count - 1].gameObject.SetActive(false);
         armyFSubAgents1[armyFSubAgents1.Count - 2].gameObject.SetActive(false);
 
-
         yield return new WaitForSeconds(1.0f);
 
-        Debug.Log("7. ArmyE takes action");
+
+        textDisplay.SetText("Army E - sd4f65 retreats back to [0.9, -0.6], strengthening defense.");
         MoveAllTeamAgents(armyESubAgents1, new Vector3(0.9f, -0.6f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents1));
         yield return PlayPixelArtAnimation(pixelArts[25], new Vector3(0.9f, -0.6f), Vector3.right, speed: 0.8f, animLoops: 8);
@@ -120,38 +126,42 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
 
-        Debug.Log("8. ArmyF takes action");
+        textDisplay.SetText("Army F adjusts the strategy by sending an additional 120 archers to support and merge with Army F - g51j5f.");
         var (armyFSubAgents3, armyFSubAgents4) = SplitAgents(armyFSubAgents2, 6);
         MoveAllTeamAgents(armyFSubAgents3, new Vector3(1.5f, -0.6f));
         MoveAllTeamAgents(armyFSubAgents4, new Vector3(2f, 0.25f));
         MoveAllTeamAgents(armyFSubAgents1, new Vector3(2f, 0.25f));
-
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
+
+        yield return new WaitForSeconds(2.0f);
+
+
+        textDisplay.SetText("Army F then launches their attack against the enemy, resulting in a total of 350 casualties.");
         yield return PlayPixelArtAnimation(pixelArts[18], new Vector3(1.5f, -0.6f), new Vector3(1.5f, -0.6f) - new Vector3(0.9f, -0.6f), speed: 0.6f, animLoops: 4);
         armyESubAgents1[armyESubAgents1.Count - 2].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
 
-        Debug.Log("9. ArmyF takes action");
         yield return PlayPixelArtAnimation(pixelArts[30], new Vector3(2f, 0.25f) - new Vector3(1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.5f, 0.6f), speed: 0.5f, animLoops: 4);
         armyESubAgents3[armyESubAgents3.Count - 1].gameObject.SetActive(false);
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(3.0f);
 
 
-        Debug.Log("10. ArmyE takes action");
+        textDisplay.SetText("Army E readjusts their personnels. Two armies gather at [0.7, -0.5] and the other one moves to [0.4, 0.15].");
         MoveAllTeamAgents(armyESubAgents1, new Vector3(0.7f, -0.5f));
         MoveAllTeamAgents(armyESubAgents3, new Vector3(0.7f, -0.5f));
         MoveAllTeamAgents(armyESubAgents4, new Vector3(0.4f, 0.15f));
 
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyEAgents));
+        yield return new WaitForSeconds(5.0f);
 
+
+        textDisplay.SetText("Army E launches attack archery attack and spear attack, severely damaging its enemy.");
         yield return PlayPixelArtAnimation(pixelArts[29], new Vector3(0.4f, 0.15f) - new Vector3(-1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.4f, 0.15f), speed: 0.5f, animLoops: 4);
         armyFSubAgents4[armyFSubAgents4.Count - 3].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
-
-        Debug.Log("11. ArmyE takes action");
 
         yield return PlayPixelArtAnimation(pixelArts[13], new Vector3(0.7f, -0.5f), new Vector3(1.5f, -0.6f) - new Vector3(0.7f, -0.5f), speed: 0.6f, animLoops: 4);
         armyFSubAgents3[armyFSubAgents3.Count - 3].gameObject.SetActive(false);
@@ -159,7 +169,7 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
 
-        Debug.Log("ArmyF takes action");
+        textDisplay.SetText("The battlefield erupts in chaos as both armies clash in brutal melee combat.");
         MoveAllTeamAgents(armyFSubAgents3, new Vector3(1.25f, -0.5f));
         MoveAllTeamAgents(armyFSubAgents4, new Vector3(1.9f, 0.35f));
         MoveAllTeamAgents(armyFSubAgents1, new Vector3(1.9f, 0.35f));
@@ -168,16 +178,19 @@ public class SimulationManager : MonoBehaviour
         yield return PlayTwoPixelArtAnimations(pixelArts[5], new Vector3(0.7f, -0.5f), pixelArts[16], new Vector3(1.25f, -0.5f), speed1: 0.4f, animLoops1: 6, speed2: 0.4f, animLoops2: 8);
         armyESubAgents1[armyESubAgents1.Count - 3].gameObject.SetActive(false);
         armyFSubAgents3[armyFSubAgents3.Count - 4].gameObject.SetActive(false);
+        yield return new WaitForSeconds(2.0f);
 
-        yield return new WaitForSeconds(1.0f);
-
-
+        textDisplay.SetText("Archers on both sides draw and release in lethal rhythm.");
         yield return new WaitForSeconds(1.0f);
         yield return PlayTwoPixelArtAnimations(pixelArts[27], new Vector3(0.4f, 0.15f), pixelArts[30], new Vector3(1.9f, 0.35f) - new Vector3(1.2f, -0.0f), 
             direction1: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), direction2: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), speed1: 0.4f, animLoops1: 5, speed2: 0.4f, animLoops2: 6);
+
+        textDisplay.SetText("Both sides take and cause serious damage.");
         armyESubAgents4[armyESubAgents4.Count - 2].gameObject.SetActive(false);
         armyESubAgents4[armyESubAgents4.Count - 3].gameObject.SetActive(false);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(5.0f);
+
+        textDisplay.SetText("");
 
     }
 
