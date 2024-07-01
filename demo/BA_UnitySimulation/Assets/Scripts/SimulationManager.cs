@@ -14,7 +14,10 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private Transform armyFTarget;
 
     [SerializeField] private Transform pixelArtsParent;
-
+    public AudioClip ArrowSound;
+    public AudioClip SwordSound;
+    [SerializeField] private AudioSource battleAudioSource;
+    [SerializeField] private AudioSource backgroundAudioSource;
 
     //[SerializeField] private List<NavigateSoldier> armyEAgents;
     //[SerializeField] private List<NavigateSoldier> armyFAgents;
@@ -25,11 +28,13 @@ public class SimulationManager : MonoBehaviour
     private List<GameObject> pixelArts = new List<GameObject>();
 
     private TextDisplay textDisplay;
+    private bool isPaused = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
+
         // Get the TextDisplay component attached to the same GameObject
         textDisplay = GetComponent<TextDisplay>();
 
@@ -49,75 +54,80 @@ public class SimulationManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Set the destination of all agents in Army E
-        //MoveAllTeamAgents(armyEAgents, armyETarget.position);
-
-        // Set the destination of all agents in Army F
-        //MoveAllTeamAgents(armyFAgents, armyFTarget.position);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TogglePause();
+        }
     }
 
     private IEnumerator ManageBattleSequence()
     {
-        yield return new WaitForSeconds(1.0f);
+        battleAudioSource.loop = true;
+        battleAudioSource.Play();
 
-        textDisplay.SetText("Army E gathers at [-0.2, 1.0]. Prepare for battle.");
+        yield return new WaitForSeconds(1.0f);
+        textDisplay.SetText("The Battle of Crecy");
+
+        yield return new WaitForSeconds(5.0f);
+
+        textDisplay.SetText("English army gathers at [-0.2, 1.0]. Prepare for battle.");
         MoveAllTeamAgents(armyEAgents, new Vector3(-0.2f, 1.0f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyEAgents));
 
         yield return new WaitForSeconds(1.0f);
 
 
-        textDisplay.SetText("Army F moves to [-0.2, 1.0] and fortifies position.");
+        textDisplay.SetText("French army moves to [-0.2, 1.0] and fortifies position.");
         MoveAllTeamAgents(armyFAgents, new Vector3(2.6f, -1.2f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
 
         yield return new WaitForSeconds(1.0f);
 
 
-        textDisplay.SetText("Army E deploys 400 knights (Army E - sd4f65) to [1.6, -1.4], and attacks Army F.");
+        textDisplay.SetText("English army deploys 400 knights (English army - sd4f65) to [1.6, -1.4], and attacks the French.");
         var (armyESubAgents1, armyESubAgents2) = SplitAgents(armyEAgents, 4);
         MoveAllTeamAgents(armyESubAgents1, new Vector3(1.6f, -1.4f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents1));
-        yield return PlayPixelArtAnimation(pixelArts[3], new Vector3(1.6f, -1.4f), Vector3.right, speed: 0.5f, animLoops: 3);
+        yield return PlayPixelArtAnimation(pixelArts[3], new Vector3(1.6f, -1.4f), Vector3.right, speed: 0.5f, animLoops: 3, clip: SwordSound);
 
-        textDisplay.SetText("Army F loses 200 soldiers.");
+        textDisplay.SetText("French army loses 200 soldiers.");
         armyFAgents[armyFAgents.Count - 1].gameObject.SetActive(false);
         armyFAgents[armyFAgents.Count - 2].gameObject.SetActive(false);
         yield return new WaitForSeconds(2.0f);
 
 
-        textDisplay.SetText("Army F retaliates by moving to [2.2, -1.3] and launches spear attack.");
+        textDisplay.SetText("French army retaliates by moving to [2.2, -1.3] and launches spear attack.");
         MoveAllTeamAgents(armyFAgents, new Vector3(2.2f, -1.3f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
-        yield return PlayPixelArtAnimation(pixelArts[12], new Vector3(2.2f, -1.3f), Vector3.right, speed: 0.5f, animLoops: 3);
+        yield return PlayPixelArtAnimation(pixelArts[12], new Vector3(2.2f, -1.3f), Vector3.right, speed: 0.5f, animLoops: 3, clip: SwordSound);
 
-        textDisplay.SetText("Army E - sd4f65 loses 100 soldiers.");
+        textDisplay.SetText("English army - sd4f65 loses 100 soldiers.");
         armyESubAgents1[armyESubAgents1.Count - 1].gameObject.SetActive(false);
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(3.0f);
 
 
-        textDisplay.SetText("Army F deploys 600 archers (Army F - g51j5f) to [1.4, 0.8], causing a casualty of 120 soldiers on Army E.");
+        textDisplay.SetText("French army deploys 600 archers (French army - g51j5f) to [1.4, 0.8], causing a casualty of 120 soldiers on English army.");
         var (armyFSubAgents1, armyFSubAgents2) = SplitAgents(armyFAgents, 6);
         MoveAllTeamAgents(armyFSubAgents1, new Vector3(1.4f, 0.8f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFSubAgents1));
-        yield return PlayPixelArtAnimation(pixelArts[32], new Vector3(1.4f, 0.8f) - new Vector3(1.2f, -0.5f), new Vector3(1.4f, 0.8f) - new Vector3(-0.2f, 1.0f), speed: 0.5f, animLoops: 3);
+        yield return PlayPixelArtAnimation(pixelArts[32], new Vector3(1.4f, 0.8f) - new Vector3(1.2f, -0.5f), new Vector3(1.4f, 0.8f) - new Vector3(-0.2f, 1.0f), speed: 0.5f, animLoops: 3, clip: ArrowSound);
         armyESubAgents2[armyESubAgents2.Count - 1].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
 
 
-        textDisplay.SetText("Army E swiftly reacts by sending out 500 calvaries to [1.4, 0.8], causing 180 damages on Army F.");
+        textDisplay.SetText("English army swiftly reacts by sending out 500 calvaries to [1.4, 0.8], causing 180 damages on French army.");
         var (armyESubAgents3, armyESubAgents4) = SplitAgents(armyESubAgents2, 5);
         MoveAllTeamAgents(armyESubAgents3, new Vector3(0.5f, 0.6f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents3));
-        yield return PlayPixelArtAnimation(pixelArts[23], new Vector3(0.5f, 0.6f), new Vector3(1.4f, 0.8f) - new Vector3(0.5f, 0.6f), speed: 0.5f, animLoops: 3);
+        yield return PlayPixelArtAnimation(pixelArts[23], new Vector3(0.5f, 0.6f), new Vector3(1.4f, 0.8f) - new Vector3(0.5f, 0.6f), speed: 0.5f, animLoops: 3, clip: SwordSound);
         armyFSubAgents1[armyFSubAgents1.Count - 1].gameObject.SetActive(false);
         armyFSubAgents1[armyFSubAgents1.Count - 2].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
 
 
-        textDisplay.SetText("Army E - sd4f65 retreats back to [0.9, -0.6], strengthening defense.");
+        textDisplay.SetText("English army - sd4f65 retreats back to [0.9, -0.6], strengthening defense.");
         MoveAllTeamAgents(armyESubAgents1, new Vector3(0.9f, -0.6f));
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyESubAgents1));
         yield return PlayPixelArtAnimation(pixelArts[25], new Vector3(0.9f, -0.6f), Vector3.right, speed: 0.8f, animLoops: 8);
@@ -126,7 +136,7 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
 
-        textDisplay.SetText("Army F adjusts the strategy by sending an additional 120 archers to support and merge with Army F - g51j5f.");
+        textDisplay.SetText("French army adjusts the strategy by sending an additional 120 archers to support and merge with French army - g51j5f.");
         var (armyFSubAgents3, armyFSubAgents4) = SplitAgents(armyFSubAgents2, 6);
         MoveAllTeamAgents(armyFSubAgents3, new Vector3(1.5f, -0.6f));
         MoveAllTeamAgents(armyFSubAgents4, new Vector3(2f, 0.25f));
@@ -136,19 +146,20 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
 
 
-        textDisplay.SetText("Army F then launches their attack against the enemy, resulting in a total of 350 casualties.");
-        yield return PlayPixelArtAnimation(pixelArts[18], new Vector3(1.5f, -0.6f), new Vector3(1.5f, -0.6f) - new Vector3(0.9f, -0.6f), speed: 0.6f, animLoops: 4);
+        textDisplay.SetText("French army then launches their attack against the enemy, resulting in a total of 350 casualties.");
+        yield return PlayPixelArtAnimation(pixelArts[18], new Vector3(1.5f, -0.6f), new Vector3(1.5f, -0.6f) - new Vector3(0.9f, -0.6f), speed: 0.6f, animLoops: 4, clip: SwordSound);
         armyESubAgents1[armyESubAgents1.Count - 2].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
 
-        yield return PlayPixelArtAnimation(pixelArts[30], new Vector3(2f, 0.25f) - new Vector3(1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.5f, 0.6f), speed: 0.5f, animLoops: 4);
+        yield return PlayPixelArtAnimation(pixelArts[30], new Vector3(2f, 0.25f) - new Vector3(1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.5f, 0.6f), 
+            speed: 0.5f, animLoops: 4, clip: ArrowSound);
         armyESubAgents3[armyESubAgents3.Count - 1].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(3.0f);
 
 
-        textDisplay.SetText("Army E readjusts their personnels. Two armies gather at [0.7, -0.5] and the other one moves to [0.4, 0.15].");
+        textDisplay.SetText("English army readjusts their personnels. Two armies gather at [0.7, -0.5] and the other one moves to [0.4, 0.15].");
         MoveAllTeamAgents(armyESubAgents1, new Vector3(0.7f, -0.5f));
         MoveAllTeamAgents(armyESubAgents3, new Vector3(0.7f, -0.5f));
         MoveAllTeamAgents(armyESubAgents4, new Vector3(0.4f, 0.15f));
@@ -157,13 +168,14 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
 
 
-        textDisplay.SetText("Army E launches attack archery attack and spear attack, severely damaging its enemy.");
-        yield return PlayPixelArtAnimation(pixelArts[29], new Vector3(0.4f, 0.15f) - new Vector3(-1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.4f, 0.15f), speed: 0.5f, animLoops: 4);
+        textDisplay.SetText("English army launches attack archery attack and spear attack, severely damaging its enemy.");
+        yield return PlayPixelArtAnimation(pixelArts[29], new Vector3(0.4f, 0.15f) - new Vector3(-1.2f, -0.5f), new Vector3(2f, 0.25f) - new Vector3(0.4f, 0.15f), 
+            speed: 0.5f, animLoops: 4, clip: ArrowSound);
         armyFSubAgents4[armyFSubAgents4.Count - 3].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
 
-        yield return PlayPixelArtAnimation(pixelArts[13], new Vector3(0.7f, -0.5f), new Vector3(1.5f, -0.6f) - new Vector3(0.7f, -0.5f), speed: 0.6f, animLoops: 4);
+        yield return PlayPixelArtAnimation(pixelArts[13], new Vector3(0.7f, -0.5f), new Vector3(1.5f, -0.6f) - new Vector3(0.7f, -0.5f), speed: 0.6f, animLoops: 4, clip: SwordSound);
         armyFSubAgents3[armyFSubAgents3.Count - 3].gameObject.SetActive(false);
 
         yield return new WaitForSeconds(1.0f);
@@ -175,7 +187,8 @@ public class SimulationManager : MonoBehaviour
         MoveAllTeamAgents(armyFSubAgents1, new Vector3(1.9f, 0.35f));
 
         yield return new WaitUntil(() => AllAgentsReachedDestination(armyFAgents));
-        yield return PlayTwoPixelArtAnimations(pixelArts[5], new Vector3(0.7f, -0.5f), pixelArts[16], new Vector3(1.25f, -0.5f), speed1: 0.4f, animLoops1: 6, speed2: 0.4f, animLoops2: 8);
+        yield return PlayTwoPixelArtAnimations(pixelArts[5], new Vector3(0.7f, -0.5f), pixelArts[16], new Vector3(1.25f, -0.5f), 
+            speed1: 0.4f, animLoops1: 6, speed2: 0.4f, animLoops2: 8, clip: SwordSound);
         armyESubAgents1[armyESubAgents1.Count - 3].gameObject.SetActive(false);
         armyFSubAgents3[armyFSubAgents3.Count - 4].gameObject.SetActive(false);
         yield return new WaitForSeconds(2.0f);
@@ -183,7 +196,8 @@ public class SimulationManager : MonoBehaviour
         textDisplay.SetText("Archers on both sides draw and release in lethal rhythm.");
         yield return new WaitForSeconds(1.0f);
         yield return PlayTwoPixelArtAnimations(pixelArts[27], new Vector3(0.4f, 0.15f), pixelArts[30], new Vector3(1.9f, 0.35f) - new Vector3(1.2f, -0.0f), 
-            direction1: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), direction2: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), speed1: 0.4f, animLoops1: 5, speed2: 0.4f, animLoops2: 6);
+            direction1: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), direction2: new Vector3(1.9f, 0.35f) - new Vector3(0.4f, 0.15f), 
+            speed1: 0.4f, animLoops1: 5, speed2: 0.4f, animLoops2: 6, clip: ArrowSound);
 
         textDisplay.SetText("Both sides take and cause serious damage.");
         armyESubAgents4[armyESubAgents4.Count - 2].gameObject.SetActive(false);
@@ -191,6 +205,9 @@ public class SimulationManager : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
 
         textDisplay.SetText("");
+
+        yield return new WaitForSeconds(5.0f);
+        battleAudioSource.Stop();
 
     }
 
@@ -242,7 +259,7 @@ public class SimulationManager : MonoBehaviour
         return true;
     }
 
-    private IEnumerator PlayPixelArtAnimation(GameObject pixelArt, Vector3 position, Vector3 direction = default(Vector3), float speed = 1f, int animLoops = 1)
+    private IEnumerator PlayPixelArtAnimation(GameObject pixelArt, Vector3 position, Vector3 direction = default(Vector3), float speed = 1f, int animLoops = 1, AudioClip clip = null)
     {
         // Calculate the direction vector from position to targetPosition
         if (direction == Vector3.zero)
@@ -260,6 +277,14 @@ public class SimulationManager : MonoBehaviour
         Animator animator = clone.GetComponent<Animator>();
         animator.speed = speed;
 
+        if (clip != null)
+        {
+            battleAudioSource.loop = true;
+            battleAudioSource.clip = clip;
+            battleAudioSource.pitch = 1f;
+            battleAudioSource.Play();
+        }
+
         if (animator != null && animator.runtimeAnimatorController != null)
         {
             // Get the default animation clip
@@ -271,11 +296,17 @@ public class SimulationManager : MonoBehaviour
                 yield return new WaitForSeconds(clips[0].length / animator.speed * animLoops);
             }
         }
-        
+
+        if (clip != null)
+        {
+            battleAudioSource.loop = false;
+            battleAudioSource.Stop();
+        }
+
         Destroy(clone);
     }
 
-    private IEnumerator PlayTwoPixelArtAnimations(GameObject pixelArt1, Vector3 position1, GameObject pixelArt2, Vector3 position2, Vector3 direction1 = default(Vector3), float speed1 = 1f, int animLoops1 = 1, Vector3 direction2 = default(Vector3), float speed2 = 1f, int animLoops2 = 1)
+    private IEnumerator PlayTwoPixelArtAnimations(GameObject pixelArt1, Vector3 position1, GameObject pixelArt2, Vector3 position2, Vector3 direction1 = default(Vector3), float speed1 = 1f, int animLoops1 = 1, Vector3 direction2 = default(Vector3), float speed2 = 1f, int animLoops2 = 1, AudioClip clip = null)
     {
         if (direction1 == Vector3.zero)
         {
@@ -301,6 +332,15 @@ public class SimulationManager : MonoBehaviour
         Animator animator2 = clone2.GetComponent<Animator>();
         animator1.speed = speed2;
 
+        if (clip != null)
+        {
+            battleAudioSource.loop = true;
+            battleAudioSource.clip = clip;
+            battleAudioSource.pitch = 1f;
+            battleAudioSource.Play();
+        }
+
+
         if (animator1 != null && animator1.runtimeAnimatorController != null && animator2 != null && animator2.runtimeAnimatorController != null)
         {
             // Get the default animation clip
@@ -312,6 +352,12 @@ public class SimulationManager : MonoBehaviour
                 // Wait for the animation to finish
                 yield return new WaitForSeconds(Mathf.Min(clips1[0].length / animator1.speed * animLoops1, clips2[0].length / animator2.speed * animLoops2));
             }
+        }
+
+        if (clip != null)
+        {
+            battleAudioSource.loop = false;
+            battleAudioSource.Stop();
         }
 
         Destroy(clone1);
@@ -338,5 +384,11 @@ public class SimulationManager : MonoBehaviour
 
         }
         return (SubAgents, RemainingAgents);
+    }
+
+    private void TogglePause()
+    {
+        isPaused = !isPaused;
+        Time.timeScale = isPaused ? 0 : 1;
     }
 }

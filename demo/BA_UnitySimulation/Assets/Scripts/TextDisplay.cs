@@ -7,14 +7,15 @@ public class TextDisplay : MonoBehaviour
 {
     public TMP_Text descriptionText; // Use TMP_Text if using TextMeshPro
     public float displaySpeed = 0.05f;
+    public AudioClip typeSound;
 
+    [SerializeField] private AudioSource audioSource;
     private string fullText;
     private Coroutine displayCoroutine;
 
     void Start()
     {
-        // Example usage
-        //SetText("This is an example description text that will be displayed chunk by chunk.");
+
     }
 
     public void SetText(string text)
@@ -30,10 +31,22 @@ public class TextDisplay : MonoBehaviour
     private IEnumerator DisplayText()
     {
         descriptionText.text = "";
+        //PlayTypeSound();
+
+        audioSource.loop = true;
+        audioSource.clip = typeSound;
+        audioSource.pitch = 5f;
+        audioSource.Play();
+
         foreach (char c in fullText)
         {
             descriptionText.text += c;
             yield return new WaitForSeconds(displaySpeed);
         }
+
+        audioSource.Stop();
+        audioSource.loop = false;
     }
+
+
 }
